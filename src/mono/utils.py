@@ -1,0 +1,89 @@
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+from tempfile import NamedTemporaryFile
+from typing import Any, Iterable
+
+import click
+from rich.console import Console
+from rich.theme import Theme
+
+PROJECT_NAME = __name__.split(".")[0]
+THEME = Theme(
+    {
+        "primary": "cyan",
+        "info": "grey63",
+        "succ": "green bold",
+        "notice": "yellow",
+        "danger": "red bold",
+    }
+)
+
+console = Console(theme=THEME)
+
+
+def info(msg: str) -> None:
+    """Print info message."""
+    prefix = f"[primary]{PROJECT_NAME}[/] "
+    console.print(prefix + msg)
+
+
+def run_command(
+    cmd: list[str], cwd: str = None, env: dict[str, str] | None = None, **kwargs: Any
+) -> None:
+    """Run command in subprocess"""
+    try:
+        subprocess.run(cmd, cwd=cwd, env=env, check=True, **kwargs)
+    except subprocess.CalledProcessError:
+        console.print("[danger]Error running command[/] {}. ")
+        raise click.Abort()
+
+
+def get_preferred_python_version() -> str:
+    """Get preferred python version"""
+    major, minor = sys.version_info[:2]
+    return f"{major}.{minor}"
+
+
+def ensure_virtualenv(path: Path, python_version: str | None = None) -> None:
+    """Ensure virtualenv exists"""
+    from virtualenv import cli_run
+
+    if path.exists():
+        return
+    info(f"Creating virtualenv: [primary]{path}[/]")
+    args = [str(path)]
+    if python_version:
+        args = ["-p", python_version] + args
+    cli_run(args, setup_logging=True)
+
+
+def pip_install(venv_path: Path, requirements: Iterable[str]) -> None:
+    """Install the given requirements into the venv"""
+    ensure_virtualenv(venv_path)
+    if os.name == "nt":
+        python = venv_path / "Scripts" / "python.exe"
+    else:
+        python = venv_path / "bin" / "python"
+    with NamedTemporaryFile(
+        "w", prefix="mono-", suffix="-reqs.txt", delete=False
+    ) as temp:
+        for req in requirements:
+            temp.write(f"{req}\n")
+        temp.close()
+        args = [
+            str(python),
+            "-Im",
+            "pip",
+            "install",
+            "--upgrade",
+            "-r",
+            temp.name,
+        ]
+        try:
+            run_command(args, cwd=venv_path.parent, stdout=subprocess.DEVNULL)
+        finally:
+            os.unlink(temp.name)

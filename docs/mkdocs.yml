@@ -1,0 +1,38 @@
+site_name: 'Mono'
+site_description: 'Python monorepo made easy'
+site_url: 'https://frostming.github.io/mono'
+repo_url: 'https://github.com/frostming/mono'
+repo_name: 'frostming/mono'
+site_dir: 'site'
+
+nav:
+  - Home:
+      - Overview: index.md
+      - Changelog: changelog.md
+  - Development:
+      - Contributing: contributing.md
+      - Code of Conduct: code_of_conduct.md
+
+theme:
+  name: material
+  palette:
+    primary: deep purple
+    accent: teal
+  font:
+    text: Open Sans
+    code: Fira Code
+
+markdown_extensions:
+  - admonition
+  - pymdownx.emoji
+  - pymdownx.magiclink
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist
+  - toc:
+      permalink: '#'
+
+plugins:
+  - search

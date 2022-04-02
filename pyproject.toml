@@ -1,0 +1,129 @@
+[build-system]
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"
+
+[project]
+name = "mono"
+description = "Python monorepo made easy"
+authors = [
+    {name = "Frost Ming", email = "mianghong@gmail.com"}
+]
+license-expression = "MIT"
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "build>=0.7.0",
+    "gitpython>=3",
+    "click>=7",
+    "packaging>=20",
+    "rich-click>=1.3.0",
+    "twine",
+    "tomlkit>=0.8",
+    "virtualenv>=20.1.0",
+]
+dynamic = ["version"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha"
+]
+
+[project.urls]
+Repository = "https://github.com/frostming/mono"
+Homepage = "https://github.com/frostming/mono"
+
+[project.scripts]
+mono = "mono.cli:main"
+
+[tool.pdm]
+version = {from = "src/mono/cli.py"}
+package-dir = "src"
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "pytest>=6.1",
+]
+test = [
+    "towncrier>=19.2",
+    "parver>=0.3",
+]
+
+doc = [
+    "mkdocs>=1.1",
+    "mkdocs-material>=6.2",
+]
+
+[tool.pdm.scripts]
+release = "python -m tasks.release"
+test = "pytest tests/"
+doc = {shell = "cd docs && mkdocs serve", help = "Start the dev server for doc preview"}
+lint = "pre-commit run --all-files"
+
+[tool.black]
+line-length = 88
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | tests/fixtures
+)/
+'''
+
+[tool.towncrier]
+package = "mono"
+filename = "CHANGELOG.md"
+issue_format = "[#{issue}](https://github.com/frostming/mono/issues/{issue})"
+directory = "news/"
+start_string = "<!-- insertion marker -->"
+title_format = "[v{version}](https://github.com/frostming/mono/releases/tag/{version}) ({project_date})"
+template = "news/towncrier_template.md"
+underlines = "-~^"
+
+[[tool.towncrier.type]]
+directory = "feature"
+name = "Features & Improvements"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "bugfix"
+name = "Bug Fixes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "doc"
+name = "Improved Documentation"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "dep"
+name = "Dependencies"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "removal"
+name = "Removals and Deprecations"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "misc"
+name = "Miscellany"
+showcontent = true
+
+[tool.isort]
+profile = "black"
+atomic = true
+skip_glob = ["*/setup.py"]
+filter_files = true
+known_first_party = ["mono"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+  "ignore::DeprecationWarning"
+]
