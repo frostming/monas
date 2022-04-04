@@ -9,7 +9,7 @@ from rich.table import Table
 
 from mono.config import Config
 from mono.project import PyPackage
-from mono.utils import console
+from mono.utils import console, is_relative_to
 
 
 def filter_options(f):
@@ -82,3 +82,19 @@ def list_packages(
             row.append(f"[info]{pkg.path}[/]")
         table.add_row(*row)
     console.print(table)
+
+
+def get_changed_packages(config: Config, describe_result: str) -> list[PyPackage]:
+    """Get the changed packages."""
+    repo = config.get_repo()
+    if describe_result.tag and describe_result.distance == 0:
+        return []
+    packages = list(config.iter_packages())
+    if describe_result.tag:
+        diff_files = repo.diff(describe_result.tag)
+        packages = [
+            pkg
+            for pkg in packages
+            if any(is_relative_to(config.path / f, pkg.path) for f in diff_files)
+        ]
+    return packages

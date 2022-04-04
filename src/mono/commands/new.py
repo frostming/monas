@@ -1,4 +1,5 @@
 from pathlib import Path
+from click.decorators import pass_context
 
 import rich_click as click
 from rich.prompt import Confirm
@@ -13,7 +14,10 @@ from mono.utils import console, info
 @click.argument("package", required=True)
 @click.argument("location", required=False)
 @pass_config
-def new(config: Config, *, package: str, location: str | None = None):
+@pass_context
+def new(
+    ctx: click.Context, config: Config, *, package: str, location: str | None = None
+):
     """Create a new <package> under <location>.
 
     The package name must be locally unique and available on PyPI.
@@ -46,7 +50,7 @@ def new(config: Config, *, package: str, location: str | None = None):
     info(f"Writing pyproject.toml at [primary]{pyproject.toml_path}[/]:")
     console.print(pyproject_doc.as_string().replace("[", "\\["))
     if not Confirm.ask("Is this OK?", console=console, default=True):
-        raise click.Abort()
+        ctx.abort()
     pyproject.write_toml(pyproject_doc)
     info("Creating project files")
     pyproject.create_project_files()

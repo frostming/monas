@@ -12,7 +12,6 @@ license-expression = "MIT"
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
-    "build>=0.7.0",
     "gitpython>=3",
     "click>=7",
     "packaging>=20",
@@ -21,6 +20,7 @@ dependencies = [
     "twine",
     "tomlkit>=0.8",
     "virtualenv>=20.1.0",
+    "parver",
 ]
 dynamic = ["version"]
 

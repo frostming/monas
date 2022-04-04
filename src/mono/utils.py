@@ -85,6 +85,15 @@ def pip_install(venv_path: Path, requirements: Iterable[str]) -> None:
             temp.name,
         ]
         try:
-            run_command(args, cwd=venv_path.parent, stdout=subprocess.DEVNULL)
+            run_command(args, cwd=str(venv_path.parent), stdout=subprocess.DEVNULL)
         finally:
             os.unlink(temp.name)
+
+
+def is_relative_to(path: Path, parent: Path) -> bool:
+    """Check if path is relative path to the parent"""
+    try:
+        path.absolute().relative_to(parent)
+        return True
+    except ValueError:
+        return False

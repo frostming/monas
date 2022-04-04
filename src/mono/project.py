@@ -86,6 +86,12 @@ class PyPackage:
         """Get the project version"""
         return self.toml_file.read()["project"]["version"]
 
+    def set_version(self, version: str) -> None:
+        """Set the project version"""
+        metadata = self.toml_file.read()
+        metadata["project"]["version"] = version
+        self.write_toml(metadata)
+
     def build_toml(self, metadata: InputMetadata) -> tomlkit.TOMLDocument:
         """Create a new package"""
         license_table = tomlkit.inline_table()

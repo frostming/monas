@@ -41,7 +41,7 @@ class Config:
 
     def get_repo(self) -> Git:
         """Get the git repository."""
-        return Git(self.path.parent)
+        return Git(self.path)
 
     @property
     def root_venv(self) -> Path:
@@ -62,6 +62,11 @@ class Config:
     def version(self) -> str:
         """The version of the monorepo"""
         return self._tool.get("version", "0.0.0")
+
+    def set_version(self, version: str) -> None:
+        """Set the version of the monorepo"""
+        self._tool["version"] = version
+        TOMLFile(self.path / "pyproject.toml").write(self._pyproject)
 
     @property
     def python_version(self) -> str:
