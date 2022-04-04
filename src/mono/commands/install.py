@@ -9,7 +9,8 @@ import rich_click as click
 from mono.commands.common import concurrency_option, filter_options, filter_packages
 from mono.config import Config, pass_config
 from mono.project import PyPackage
-from mono.utils import err_console as console, info, pip_install
+from mono.utils import err_console as console
+from mono.utils import info, pip_install
 
 
 @click.command()

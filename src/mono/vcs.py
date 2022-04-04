@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import NamedTuple
 
-from git import Repo
 import git
+from git import Repo
 from git.exc import InvalidGitRepositoryError
 
 

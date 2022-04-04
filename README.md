@@ -7,6 +7,8 @@
 
 Python monorepo made easy.
 
+🚧 **[WIP]** This project still in a rapid development and the behaviors may change. 🚧
+
 ## Features
 
 **Mono** is a tool to manage multiple Python projects in a single monorepo. It is mainly inspired by [Lerna](https://lerna.js.org/). It supports the following build systems:
@@ -31,6 +33,13 @@ Alternatively, install with `pip` to the user site:
 ```bash
 $ python -m pip install --user mono
 ```
+
+## To-do
+
+- [ ] Documentation
+- [ ] Tests
+- [ ] `setup.cfg` support
+- [ ] (Possible) Poetry backend support
 
 ## License
 

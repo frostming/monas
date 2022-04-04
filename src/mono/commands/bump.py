@@ -1,15 +1,15 @@
 from __future__ import annotations
-from click.decorators import pass_context
-from mono.commands.common import get_changed_packages
 
-from mono.config import Config, pass_config
-from mono.utils import info, console
-from questionary.prompts.common import Choice
+import questionary
 import rich_click as click
+from click.decorators import pass_context
+from parver import Version
+from questionary.prompts.common import Choice
 from rich.prompt import Confirm
 
-from parver import Version
-import questionary
+from mono.commands.common import get_changed_packages
+from mono.config import Config, pass_config
+from mono.utils import console, info
 
 # from parver import Version
 

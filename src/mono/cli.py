@@ -12,7 +12,7 @@ from mono.commands.list import list_command
 from mono.commands.new import new
 from mono.commands.publish import publish
 
-__version__ = "0.1.0"
+__version__ = "0.0.1"
 
 click.rich_click.USE_RICH_MARKUP = True
 traceback.install()

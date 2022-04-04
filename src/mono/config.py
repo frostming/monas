@@ -12,6 +12,7 @@ from mono.vcs import Git
 
 if typing.TYPE_CHECKING:
     from tomlkit.toml_document import TOMLDocument
+
     from mono.project import PyPackage
 
 

@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from pathlib import Path
-from click.decorators import pass_context
 
 import rich_click as click
+from click.decorators import pass_context
 from rich.prompt import Confirm
 
 from mono.config import Config, pass_config
