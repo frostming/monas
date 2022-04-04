@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shlex
 import textwrap
 from dataclasses import dataclass
 from pathlib import Path
@@ -173,5 +174,5 @@ class PyPackage:
             for pkg in self.config.iter_packages()
             if pkg.canonical_name in dependency_names
         ] + [self]
-        requirements = [f"-e {pkg.path.as_posix()}" for pkg in packages]
+        requirements = [shlex.join(["-e", pkg.path.as_posix()]) for pkg in packages]
         pip_install(self.path / ".venv", requirements)

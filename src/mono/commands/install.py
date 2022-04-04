@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shlex
 from concurrent.futures import Future
 from concurrent.futures import ThreadPoolExecutor as Pool
 from typing import Any
@@ -37,7 +38,7 @@ def install(config: Config, *, concurrency: int, root: bool, **kwargs: Any) -> N
             f"Installing [primary]{package_count}[/] package(s) to the root project",
             spinner="point",
         ):
-            requirements = (f"-e {pkg.path.as_posix()}" for pkg in packages)
+            requirements = (shlex.join(["-e", pkg.path.as_posix()]) for pkg in packages)
             pip_install(config.root_venv, requirements)
         info("[succ]Installation done[/]")
         return
