@@ -9,7 +9,7 @@ import rich_click as click
 from mono.commands.common import concurrency_option, filter_options, filter_packages
 from mono.config import Config, pass_config
 from mono.project import PyPackage
-from mono.utils import console, info, pip_install
+from mono.utils import err_console as console, info, pip_install
 
 
 @click.command()
@@ -33,7 +33,7 @@ def install(config: Config, *, concurrency: int, root: bool, **kwargs: Any) -> N
 
     if root:
         with console.status(
-            f"Installing [primary]{package_count}[/] packages to the root project",
+            f"Installing [primary]{package_count}[/] package(s) to the root project",
             spinner="point",
         ):
             requirements = (f"-e {pkg.path.as_posix()}" for pkg in packages)
@@ -52,7 +52,7 @@ def install(config: Config, *, concurrency: int, root: bool, **kwargs: Any) -> N
             console.print(f" [succ]SUCC[/] {project.path.name}")
 
     with console.status(
-        f"Installing [primary]{package_count}[/] packages", spinner="point"
+        f"Installing [primary]{package_count}[/] package(s)", spinner="point"
     ):
         with Pool(concurrency) as executor:
             for pkg in packages:

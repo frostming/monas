@@ -1,10 +1,15 @@
 from __future__ import annotations
-from fnmatch import fnmatch
+
 import multiprocessing
+from fnmatch import fnmatch
 from typing import Collection, Iterable
+
 import click
-from mono.project import PyPackage
+from rich.table import Table
+
 from mono.config import Config
+from mono.project import PyPackage
+from mono.utils import console
 
 
 def filter_options(f):
@@ -19,6 +24,16 @@ def filter_options(f):
             help="[cyan](multiple)[/]Exclude packages matching the given glob",
             metavar="GLOB",
             multiple=True,
+        )(f)
+    )
+
+
+def output_options(f):
+    return click.option(
+        "--long", "-l", is_flag=True, default=False, help="Show the full path"
+    )(
+        click.option(
+            "--json", is_flag=True, default=False, help="Output in JSON format"
         )(f)
     )
 
@@ -43,3 +58,27 @@ def filter_packages(
         ):
             continue
         yield package
+
+
+def list_packages(
+    packages: Iterable[PyPackage], *, long: bool = False, json: bool = False
+) -> None:
+    """List the packages."""
+    if json:
+        data = [
+            {"name": pkg.path.name, "version": pkg.version, "path": pkg.path.as_posix()}
+            for pkg in packages
+        ]
+        console.print_json(data=data)
+        return
+    table = Table.grid("Name", padding=(0, 1))
+    if long:
+        table.add_column("Version")
+        table.add_column("Path")
+    for pkg in packages:
+        row = [f"[primary]{pkg.path.name}[/]"]
+        if long:
+            row.append(f"[succ]{pkg.version}[/]")
+            row.append(f"[info]{pkg.path}[/]")
+        table.add_row(*row)
+    console.print(table)

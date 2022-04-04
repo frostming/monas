@@ -3,9 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
-from rich.prompt import Prompt
-
-from mono.utils import console
+import questionary
 
 
 @dataclass
@@ -13,8 +11,9 @@ class Question:
     """Question class"""
 
     description: str
-    choices: list[str] | None = None
     default: str | Callable[[dict[str, str]], str] | None = None
+    choices: list[str] | None = None
+    instruction: str | None = None
 
     def get_default(
         self, func: Callable[[dict[str, str]], str]
@@ -39,22 +38,24 @@ class Question:
                 default = self.default(answers)
             else:
                 default = self.default
-        return Prompt.ask(
-            self.description, console=console, choices=self.choices, default=default
-        )
+        if not self.choices:
+            return questionary.text(self.description, default=default).ask()
+        return questionary.select(
+            self.description, choices=self.choices, default=default, pointer="▶"
+        ).ask()
 
 
 package_questions = {
-    "name": Question("package name"),
-    "version": Question("version", default="0.0.0"),
-    "description": Question("description", default=""),
-    "license_expr": Question("license(SPDX identifier)", default="MIT"),
-    "author": Question("author"),
-    "author_email": Question("author email"),
-    "homepage": Question("homepage"),
-    "requires_python": Question("requires_python", default=">=3.7"),
+    "name": Question("package name:"),
+    "version": Question("version:", default="0.0.0"),
+    "description": Question("description:", default=""),
+    "license_expr": Question("license:", default="MIT", instruction="SPDX identifier"),
+    "author": Question("author", ""),
+    "author_email": Question("author email:", ""),
+    "homepage": Question("homepage:", ""),
+    "requires_python": Question("requires_python:", default=">=3.7"),
     "build_backend": Question(
-        "Build backend",
+        "Build backend:",
         choices=["setuptools", "pdm", "flit", "hatch"],
         default="setuptools",
     ),

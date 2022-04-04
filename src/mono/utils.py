@@ -15,7 +15,7 @@ PROJECT_NAME = __name__.split(".")[0]
 THEME = Theme(
     {
         "primary": "cyan",
-        "info": "grey63",
+        "info": "grey69",
         "succ": "green bold",
         "notice": "yellow",
         "danger": "red bold",
@@ -23,12 +23,13 @@ THEME = Theme(
 )
 
 console = Console(theme=THEME)
+err_console = Console(theme=THEME, stderr=True)
 
 
 def info(msg: str) -> None:
     """Print info message."""
-    prefix = f"[primary]{PROJECT_NAME}[/] "
-    console.print(prefix + msg)
+    prefix = f"[info]{PROJECT_NAME}[/] "
+    err_console.print(prefix + msg, highlight=False)
 
 
 def run_command(
@@ -38,7 +39,7 @@ def run_command(
     try:
         subprocess.run(cmd, cwd=cwd, env=env, check=True, **kwargs)
     except subprocess.CalledProcessError:
-        console.print("[danger]Error running command[/] {}. ")
+        err_console.print("[danger]Error running command[/] {}. ")
         raise click.Abort()
 
 

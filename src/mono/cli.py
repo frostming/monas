@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import rich_click as click
 from rich import traceback
 
@@ -13,7 +15,20 @@ click.rich_click.USE_RICH_MARKUP = True
 traceback.install()
 
 
-@click.group()
+class AliasGroup(click.RichGroup):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.aliases: dict[str, str] = {}
+
+    def add_alias(self, alias: str, name: str) -> None:
+        self.aliases[alias] = name
+
+    def get_command(self, ctx: click.Context, cmd_name: str) -> click.Command | None:
+        real_name = self.aliases.get(cmd_name, cmd_name)
+        return super().get_command(ctx, real_name)
+
+
+@click.group(cls=AliasGroup)
 @click.version_option(__version__)
 def main():
     """[cyan]Mono[/]: Python monorepo made easy"""
@@ -24,4 +39,4 @@ main.add_command(init)
 main.add_command(new)
 main.add_command(install)
 main.add_command(list_command)
-main.add_command(list_command, "ls")
+main.add_alias("ls", "list")

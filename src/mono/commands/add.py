@@ -47,7 +47,7 @@ def add(
 
     info(
         f"Adding dependency [succ]{dependency}[/] to "
-        f"[primary]{len(packages)}[/] packages"
+        f"[primary]{len(packages)}[/] package(s)"
     )
     for pkg in packages:
         pkg.add_dependency(dependency)

@@ -60,9 +60,9 @@ class InputMetadata:
     description: str
     license_expr: str
     author: str
-    remote_repo: str | None
+    remote_repo: str
     author_email: str
-    homepage: str | None
+    homepage: str
     requires_python: str
     build_backend: str
 
@@ -75,8 +75,6 @@ class PyPackage:
         self.path = path.absolute()
         self.toml_path = self.path / "pyproject.toml"
         self.toml_file = TOMLFile(self.toml_path)
-        if not self.path.exists():
-            self.path.mkdir(parents=True)
 
     @property
     def canonical_name(self) -> str:
@@ -121,6 +119,8 @@ class PyPackage:
 
     def write_toml(self, doc: tomlkit.TOMLDocument) -> None:
         """Write the pyproject.toml file"""
+        if not self.path.exists():
+            self.path.mkdir(parents=True)
         self.toml_file.write(doc)
 
     def create_project_files(self) -> None:
