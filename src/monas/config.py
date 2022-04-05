@@ -80,7 +80,7 @@ class Config:
 
     def add_package_path(self, path: str) -> None:
         """Add a package path to the configuration"""
-        self._tool.setdefault("packages", []).append(path)
+        self._tool.setdefault("packages", []).append(path.rstrip("/") + "/")
         TOMLFile(self.path / "pyproject.toml").write(self._pyproject)
 
     def iter_packages(self) -> Iterable[PyPackage]:

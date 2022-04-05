@@ -28,6 +28,8 @@ def new(
     """
     if location is None:
         location = config.package_paths[0]
+    if any(package == pkg.path.name for pkg in config.iter_packages()):
+        raise click.BadParameter(f"{package} already exists")
     project_path = Path(location, package).absolute()
     repo = config.get_repo()
 

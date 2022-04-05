@@ -11,11 +11,12 @@ from monas.commands.install import install
 from monas.commands.list import list_command
 from monas.commands.new import new
 from monas.commands.publish import publish
+from monas.utils import err_console
 
 __version__ = "0.0.2"
 
 click.rich_click.USE_RICH_MARKUP = True
-traceback.install()
+traceback.install(console=err_console)
 
 
 class AliasGroup(click.RichGroup):

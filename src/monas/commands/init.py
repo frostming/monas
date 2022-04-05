@@ -66,9 +66,11 @@ def init(*, version: str, python_version: str) -> None:
             *.py[cod]
             .pytest_cache/
             .pdm.toml
-            /build/
+            build/
             /dist/
             *.egg-info/
+            .envrc
+            .direnv/
             """
             )
         )
