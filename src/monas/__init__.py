@@ -1,5 +1,5 @@
 """
-    mono
+    monas
 
     Python monorepo made easy
     :author: Frost Ming <mianghong@gmail.com>

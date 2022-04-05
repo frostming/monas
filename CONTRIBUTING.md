@@ -10,8 +10,8 @@ Nothing easier!
 Fork and clone the repository:
 
 ```bash
-git clone https://github.com/frostming/mono
-cd mono
+git clone https://github.com/frostming/monas
+cd monas
 ```
 
 We use [pdm](https://pdm.fming.dev) to manage the project and dependencies, install PDM if it isn't done yet, then:

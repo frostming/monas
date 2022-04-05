@@ -34,7 +34,7 @@ def bump_version(
     if tag is not None:
         if tag in PRE_TAGS:
             if tag != version.pre_tag and version.pre_tag is not None:
-                version = version.replace(pre_tag=None)
+                version = version.replace(pre=None)
             version = version.bump_pre(tag)
         elif tag in POST_TAGS:
             if tag != version.post_tag and version.post_tag is not None:

@@ -24,8 +24,8 @@ jobs:
           python3 -m venv fresh_env
           . fresh_env/bin/activate
           pip install dist/*.whl
-          mono --version
-          mono --help
+          monas --version
+          monas --help
       - name: Upload to Pypi
         run: |
           pip install twine

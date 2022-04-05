@@ -10,9 +10,9 @@ copyright_holder: Frost Ming
 copyright_holder_email: mianghong@gmail.com
 copyright_license: MIT
 project_description: Python monorepo made easy
-project_name: mono
-python_package_distribution_name: mono
-python_package_import_name: mono
+project_name: monas
+python_package_distribution_name: monas
+python_package_import_name: monas
 python_package_requires_python: '>=3.7'
-repository_name: mono
+repository_name: monas
 repository_namespace: frostming

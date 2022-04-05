@@ -1,5 +1,5 @@
-import mono
+import monas
 
 
 def test_import_package():
-    assert isinstance(mono.__all__, list)
+    assert isinstance(monas.__all__, list)

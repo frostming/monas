@@ -5,7 +5,7 @@ import rich_click as click
 import tomlkit
 from tomlkit.toml_file import TOMLFile
 
-from mono.utils import get_preferred_python_version, info
+from monas.utils import get_preferred_python_version, info
 
 
 @click.command()
@@ -19,7 +19,7 @@ from mono.utils import get_preferred_python_version, info
 )
 @click.option("-v", "--version", default="0.0.0", help="The version of the monorepo")
 def init(*, version: str, python_version: str) -> None:
-    """Initialize the mono tool.
+    """Initialize the monas tool.
 
     Args:
         path: The path to the `pyproject.toml` file.
@@ -37,7 +37,7 @@ def init(*, version: str, python_version: str) -> None:
         verb = "Creating"
         doc = {}
     info(f"{verb} {pyproject_toml.name}")
-    doc.setdefault("tool", {}).setdefault("mono", {}).update(mono_settings)
+    doc.setdefault("tool", {}).setdefault("monas", {}).update(mono_settings)
     pyproject_toml.write_text(tomlkit.dumps(doc))
     for p in mono_settings["packages"]:
         p = Path(p)

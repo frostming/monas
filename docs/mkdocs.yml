@@ -1,8 +1,8 @@
-site_name: 'Mono'
+site_name: 'Monas'
 site_description: 'Python monorepo made easy'
-site_url: 'https://frostming.github.io/mono'
-repo_url: 'https://github.com/frostming/mono'
-repo_name: 'frostming/mono'
+site_url: 'https://frostming.github.io/monas'
+repo_url: 'https://github.com/frostming/monas'
+repo_name: 'frostming/monas'
 site_dir: 'site'
 
 nav:
