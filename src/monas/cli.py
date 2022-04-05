@@ -12,7 +12,7 @@ from monas.commands.list import list_command
 from monas.commands.new import new
 from monas.commands.publish import publish
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 click.rich_click.USE_RICH_MARKUP = True
 traceback.install()
