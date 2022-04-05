@@ -9,6 +9,8 @@ Python monorepo made easy.
 
 🚧 **[WIP]** This project still in a rapid development and the behaviors may change. 🚧
 
+➡️ [Example Repository](https://github.com/frostming/monas-example-repo)
+
 ## Features
 
 **Monas** is a tool to manage multiple Python projects in a single monorepo. It is mainly inspired by [Lerna](https://lerna.js.org/). It supports the following build systems:
@@ -40,6 +42,7 @@ $ python -m pip install --user monas
 - [ ] Tests
 - [ ] `setup.cfg` support
 - [ ] (Possible) Poetry backend support
+- [ ] `src` package layout
 
 ## License
 
