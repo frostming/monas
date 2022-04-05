@@ -94,7 +94,7 @@ class PyPackage:
         self.write_toml(metadata)
 
     def build_toml(self, metadata: InputMetadata) -> tomlkit.TOMLDocument:
-        """Create a new package"""
+        """Construct the pyproject.toml from the input data."""
         license_table = tomlkit.inline_table()
         license_table.update({"text": metadata.license_expr})
         authors = tomlkit.array()
@@ -131,7 +131,6 @@ class PyPackage:
         self.toml_file.write(doc)
 
     def create_project_files(self) -> None:
-        """Create the project files"""
         metadata = self.toml_file.read()
         template_args = {
             "name": metadata["project"]["name"],
@@ -151,7 +150,11 @@ class PyPackage:
         package_dir.joinpath("__init__.py").touch()
 
     def add_dependency(self, dependency: str) -> None:
-        """Add a dependency to the project"""
+        """Add a dependency to the project.
+
+        Args:
+            dependency: A requirement string(PEP 508)
+        """
         metadata = self.toml_file.read()
         dep_name = canonicalize_name(Requirement(dependency).name)
         dependencies = [
@@ -160,6 +163,22 @@ class PyPackage:
             if canonicalize_name(Requirement(dep).name) != dep_name
         ]
         dependencies.append(dependency)
+        metadata["project"]["dependencies"] = tomlkit.item(dependencies).multiline(True)
+        self.write_toml(metadata)
+
+    def remove_dependency(self, dependency: str) -> None:
+        """Remove a dependency from the project.
+
+        Args:
+            dependency: A canonicalized requirement name
+        """
+        metadata = self.toml_file.read()
+        dep_name = canonicalize_name(Requirement(dependency).name)
+        dependencies = [
+            dep
+            for dep in metadata["project"].get("dependencies", [])
+            if canonicalize_name(Requirement(dep).name) != dep_name
+        ]
         metadata["project"]["dependencies"] = tomlkit.item(dependencies).multiline(True)
         self.write_toml(metadata)
 

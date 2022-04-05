@@ -11,6 +11,7 @@ from monas.commands.install import install
 from monas.commands.list import list_command
 from monas.commands.new import new
 from monas.commands.publish import publish
+from monas.commands.remove import remove
 from monas.utils import err_console
 
 __version__ = "0.0.2"
@@ -47,3 +48,4 @@ main.add_command(list_command)
 main.add_alias("ls", "list")
 main.add_command(new)
 main.add_command(publish)
+main.add_command(remove)
