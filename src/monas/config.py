@@ -81,6 +81,7 @@ class Config:
     def add_package_path(self, path: str) -> None:
         """Add a package path to the configuration"""
         self._tool.setdefault("packages", []).append(path)
+        TOMLFile(self.path / "pyproject.toml").write(self._pyproject)
 
     def iter_packages(self) -> Iterable[PyPackage]:
         """Iterate over the packages in the monorepo"""

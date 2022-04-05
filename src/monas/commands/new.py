@@ -28,8 +28,6 @@ def new(
     """
     if location is None:
         location = config.package_paths[0]
-    if location not in config.package_paths:
-        config.add_package_path(location)
     project_path = Path(location, package).absolute()
     repo = config.get_repo()
 
@@ -56,3 +54,5 @@ def new(
     pyproject.write_toml(pyproject_doc)
     info("Creating project files")
     pyproject.create_project_files()
+    if location not in config.package_paths:
+        config.add_package_path(location)
