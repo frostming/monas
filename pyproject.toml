@@ -40,17 +40,12 @@ version = {from = "src/monas/cli.py"}
 package-dir = "src"
 
 [tool.pdm.dev-dependencies]
-dev = [
+test = [
     "pytest>=6.1",
 ]
-test = [
+dev = [
     "towncrier>=19.2",
     "parver>=0.3",
-]
-
-doc = [
-    "mkdocs>=1.1",
-    "mkdocs-material>=6.2",
 ]
 
 [tool.pdm.scripts]
