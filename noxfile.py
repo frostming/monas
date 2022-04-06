@@ -13,7 +13,6 @@ def test(session):
 
 @nox.session(python="3.9")
 def docs(session):
-    session.install(".")
     session.install("-r", "docs/requirements.txt")
 
     # Generate documentation into `build/docs`
@@ -22,8 +21,8 @@ def docs(session):
 
 @nox.session(name="docs-live", python="3.9")
 def docs_live(session):
-    session.install("-e", ".")
     session.install("-r", "docs/requirements.txt")
+    session.install("-e", ".")
     session.install("sphinx-autobuild")
 
     session.run(

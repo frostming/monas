@@ -3,3 +3,4 @@ sphinx
 myst-parser
 sphinx-copybutton
 sphinx-click
+.
