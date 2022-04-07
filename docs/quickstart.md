@@ -40,6 +40,16 @@ See what packages are added:
 monas list
 ```
 
+## Install all packages and dependencies
+
+```bash
+monas install
+```
+
+Monas will create a virtualenv under each subpackage and install all dependencies into it.
+The subpackage itself and other subpackages, if required, are installed in **editable mode**.
+That is to say, any changes locally will take effect immediately.
+
 ## Add dependencies to the subpackages
 
 ```bash

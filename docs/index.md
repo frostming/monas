@@ -1,4 +1,4 @@
-# Mono Documentation
+# Monas Documentation
 
 ```{include} ../README.md
 :start-after: <!--index start-->
@@ -8,6 +8,12 @@
 ```{toctree}
 
 quickstart
+```
+
+```{toctree}
+:hidden:
+
+integration
 ```
 
 ```{toctree}
