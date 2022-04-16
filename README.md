@@ -38,9 +38,9 @@ python -m pip install --user monas
 
 ## To-do
 
-- [ ] Documentation
+- [x] Documentation
 - [ ] Tests
-- [ ] `setup.cfg` support
+- [x] `setup.cfg` support
 - [ ] (Possible) Poetry backend support
 - [ ] `src` package layout
 

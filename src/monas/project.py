@@ -2,15 +2,16 @@ from __future__ import annotations
 
 import shlex
 import textwrap
-from dataclasses import dataclass
 from pathlib import Path
+from typing import Type, cast
 
 import tomlkit
-from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 from tomlkit.toml_file import TOMLFile
 
 from monas.config import Config
+from monas.metadata import ALL_METADATA_CLASSES, Metadata
+from monas.questions import InputMetadata
 from monas.utils import pip_install
 
 BUILD_BACKENDS = {
@@ -27,6 +28,8 @@ FILE_TEMPLATES = {
     "README.md": textwrap.dedent(
         """\
         # {name}
+
+        {description}
 
         ## Requirement
 
@@ -52,20 +55,21 @@ setup(name={name!r})
 """
 
 
-@dataclass(frozen=True)
-class InputMetadata:
-    """Package metadata class"""
+def get_build_system_for_backend(name: str) -> dict:
+    name = name.split("(")[0]
+    return BUILD_BACKENDS[name]
 
-    name: str
-    version: str
-    description: str
-    license_expr: str
-    author: str
-    remote_repo: str
-    author_email: str
-    homepage: str
-    requires_python: str
-    build_backend: str
+
+def get_metadata_class_for_backend(name: str) -> Type[Metadata]:
+    backend, _, extra = name.partition("(")
+    if backend == "setuptools":
+        class_name = "pep621" if extra.rstrip(")") == "pyproject.toml" else "setupcfg"
+    else:
+        class_name = "pep621"
+    result = next((cls for cls in ALL_METADATA_CLASSES if cls.name == class_name), None)
+    if result is None:
+        raise ValueError(f"Unsupported backend {name}")
+    return cast(Type[Metadata], result)
 
 
 class PyPackage:
@@ -73,9 +77,20 @@ class PyPackage:
 
     def __init__(self, config: Config, path: Path) -> None:
         self.config = config
-        self.path = path.absolute()
-        self.toml_path = self.path / "pyproject.toml"
-        self.toml_file = TOMLFile(self.toml_path)
+        self.path = path
+        self.metadata = self._get_metadata()
+
+    def _get_metadata(self) -> Metadata:
+        try:
+            pyproject_data = TOMLFile(self.path / "pyproject.toml").read()
+        except FileNotFoundError:
+            pyproject_data = {}
+        result = next(
+            (cls for cls in ALL_METADATA_CLASSES if cls.match(pyproject_data)), None
+        )
+        if result is None:
+            raise ValueError("Can't determine a metadata type from the pyproject.toml")
+        return cast(Type[Metadata], result)(self.path)
 
     @property
     def canonical_name(self) -> str:
@@ -85,69 +100,37 @@ class PyPackage:
     @property
     def version(self) -> str:
         """Get the project version"""
-        return self.toml_file.read()["project"]["version"]
+        return self.metadata.version
 
     def set_version(self, version: str) -> None:
         """Set the project version"""
-        metadata = self.toml_file.read()
-        metadata["project"]["version"] = version
-        self.write_toml(metadata)
+        self.metadata.version = version
 
-    def build_toml(self, metadata: InputMetadata) -> tomlkit.TOMLDocument:
-        """Construct the pyproject.toml from the input data."""
-        license_table = tomlkit.inline_table()
-        license_table.update({"text": metadata.license_expr})
-        authors = tomlkit.array()
-        author_table = tomlkit.inline_table()
-        author_table.update({"name": metadata.author, "email": metadata.author_email})
-        authors.append(author_table)
-
-        pep621_data = {
-            "name": metadata.name,
-            "version": metadata.version,
-            "description": metadata.description,
-            "authors": authors,
-            "license": license_table,
-            "requires-python": metadata.requires_python,
-            "readme": "README.md",
-            "dependencies": [],
-        }
-        project_urls = {}
-        if metadata.homepage:
-            project_urls["Home"] = metadata.homepage
-        if metadata.remote_repo:
-            project_urls["Repository"] = metadata.remote_repo
-        if project_urls:
-            pep621_data["urls"] = project_urls
-        build_system = BUILD_BACKENDS[metadata.build_backend]
-        doc = tomlkit.document()
-        doc.update({"project": pep621_data, "build-system": build_system})
-        return doc
-
-    def write_toml(self, doc: tomlkit.TOMLDocument) -> None:
-        """Write the pyproject.toml file"""
-        if not self.path.exists():
-            self.path.mkdir(parents=True)
-        self.toml_file.write(doc)
-
-    def create_project_files(self) -> None:
-        metadata = self.toml_file.read()
-        template_args = {
-            "name": metadata["project"]["name"],
-            "requires_python": metadata["project"]["requires-python"],
-            "license": metadata["project"].get("license-expression")
-            or metadata["project"]["license"].get("text", ""),
-        }
+    @classmethod
+    def create(cls, config: Config, path: Path, inputs: InputMetadata) -> None:
+        """Create a python package at the given path"""
+        metadata = get_metadata_class_for_backend(inputs.build_backend)(path)
+        template_args = metadata.get_template_args()
         for filename, template in FILE_TEMPLATES.items():
-            with open(self.path / filename, "w", encoding="utf-8") as f:
+            with open(path / filename, "w", encoding="utf-8") as f:
                 f.write(template.format(**template_args))
-        if metadata["build-system"]["build-backend"] == "setuptools.build_meta":
-            with open(self.path / "setup.py", "w", encoding="utf-8") as f:
+
+        pyproject_toml = TOMLFile(path / "pyproject.toml")
+        try:
+            data = pyproject_toml.read()
+        except FileNotFoundError:
+            data = tomlkit.document()
+        data.append("build-system", get_build_system_for_backend(inputs.build_backend))
+        pyproject_toml.write(data)
+
+        if inputs.build_backend.startswith("setuptools"):
+            with open(path / "setup.py", "w", encoding="utf-8") as f:
                 f.write(SETUP_TEMPLATE.format(**template_args))
 
-        package_dir = self.path.joinpath(self.canonical_name.replace("-", "_"))
+        package_dir = path / canonicalize_name(path.name).replace("-", "_")
         package_dir.mkdir()
         package_dir.joinpath("__init__.py").touch()
+        return cls(config, path)
 
     def add_dependency(self, dependency: str) -> None:
         """Add a dependency to the project.
@@ -155,16 +138,7 @@ class PyPackage:
         Args:
             dependency: A requirement string(PEP 508)
         """
-        metadata = self.toml_file.read()
-        dep_name = canonicalize_name(Requirement(dependency).name)
-        dependencies = [
-            dep
-            for dep in metadata["project"].get("dependencies", [])
-            if canonicalize_name(Requirement(dep).name) != dep_name
-        ]
-        dependencies.append(dependency)
-        metadata["project"]["dependencies"] = tomlkit.item(dependencies).multiline(True)
-        self.write_toml(metadata)
+        self.metadata.add_dependency(dependency)
 
     def remove_dependency(self, dependency: str) -> None:
         """Remove a dependency from the project.
@@ -172,22 +146,11 @@ class PyPackage:
         Args:
             dependency: A canonicalized requirement name
         """
-        metadata = self.toml_file.read()
-        dep_name = canonicalize_name(Requirement(dependency).name)
-        dependencies = [
-            dep
-            for dep in metadata["project"].get("dependencies", [])
-            if canonicalize_name(Requirement(dep).name) != dep_name
-        ]
-        metadata["project"]["dependencies"] = tomlkit.item(dependencies).multiline(True)
-        self.write_toml(metadata)
+        self.metadata.remove_dependency(dependency)
 
     def install(self) -> None:
         """Bootstrap the package and link depending packages in the monorepo"""
-        dependency_names = [
-            canonicalize_name(Requirement(dep).name)
-            for dep in self.toml_file.read()["project"].get("dependencies", [])
-        ]
+        dependency_names = self.metadata.get_dependency_names()
         packages = [
             pkg
             for pkg in self.config.iter_packages()

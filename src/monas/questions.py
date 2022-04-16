@@ -56,8 +56,14 @@ package_questions = {
     "requires_python": Question("requires_python:", default=">=3.7"),
     "build_backend": Question(
         "Build backend:",
-        choices=["setuptools", "pdm", "flit", "hatch"],
-        default="setuptools",
+        choices=[
+            "setuptools(setup.cfg)",
+            "setuptools(pyprojec.toml)",
+            "pdm",
+            "flit",
+            "hatch",
+        ],
+        default="setuptools(setup.cfg)",
     ),
 }
 
@@ -73,3 +79,19 @@ def ask_for(questions: dict[str, Question], **kwargs: str) -> dict[str, str]:
     for key, question in questions.items():
         answers[key] = question.ask(answers, kwargs.get(key))
     return answers
+
+
+@dataclass(frozen=True)
+class InputMetadata:
+    """Package metadata class"""
+
+    name: str
+    version: str
+    description: str
+    license_expr: str
+    author: str
+    remote_repo: str
+    author_email: str
+    homepage: str
+    requires_python: str
+    build_backend: str
