@@ -14,7 +14,7 @@ from monas.commands.publish import publish
 from monas.commands.remove import remove
 from monas.utils import err_console
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 click.rich_click.USE_RICH_MARKUP = True
 traceback.install(console=err_console)
