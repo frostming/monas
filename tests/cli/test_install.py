@@ -4,7 +4,8 @@ from unittest import mock
 @mock.patch("monas.project.pip_install")
 def test_install_all_packages(pip_install, test_project, cli_run):
     cli_run(["add", "click", "--no-install"], cwd=test_project)
-    cli_run(["install"], cwd=test_project)
+    result = cli_run(["install"], cwd=test_project)
+    print(result.output, result.stderr)
     pip_install.assert_has_calls(
         [
             mock.call(
