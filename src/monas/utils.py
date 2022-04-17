@@ -97,3 +97,13 @@ def is_relative_to(path: Path, parent: Path) -> bool:
         return True
     except ValueError:
         return False
+
+
+if sys.version_info >= (3, 8):
+    from shlex import join as sh_join
+else:
+    from shlex import quote as quote
+
+    def sh_join(split_command: Iterable[str]) -> str:
+        """Return a shell-escaped string from *split_command*."""
+        return " ".join(quote(arg) for arg in split_command)

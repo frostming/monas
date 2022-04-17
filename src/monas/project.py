@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import shlex
 import textwrap
 from pathlib import Path
 from typing import Type, cast
@@ -12,7 +11,7 @@ from tomlkit.toml_file import TOMLFile
 from monas.config import Config
 from monas.metadata import ALL_METADATA_CLASSES, Metadata
 from monas.questions import InputMetadata
-from monas.utils import pip_install
+from monas.utils import pip_install, sh_join
 
 BUILD_BACKENDS = {
     "setuptools": {
@@ -156,5 +155,5 @@ class PyPackage:
             for pkg in self.config.iter_packages()
             if pkg.canonical_name in dependency_names
         ] + [self]
-        requirements = [shlex.join(["-e", pkg.path.as_posix()]) for pkg in packages]
+        requirements = [sh_join(["-e", pkg.path.as_posix()]) for pkg in packages]
         pip_install(self.path / ".venv", requirements)
