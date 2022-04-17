@@ -46,6 +46,7 @@ jobs:
         run: pdm install
       - name: Run Tests
         run: |
+          git config --global init.defaultBranch main
           git config --global user.name "John Doe"
           git config --global user.email "me@example.org"
           pdm run test
