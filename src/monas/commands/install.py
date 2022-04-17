@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import shlex
 from concurrent.futures import Future
 from concurrent.futures import ThreadPoolExecutor as Pool
 from typing import Any
@@ -11,7 +10,7 @@ from monas.commands.common import concurrency_option, filter_options, filter_pac
 from monas.config import Config, pass_config
 from monas.project import PyPackage
 from monas.utils import err_console as console
-from monas.utils import info, pip_install
+from monas.utils import info, pip_install, sh_join
 
 
 @click.command()
@@ -38,7 +37,7 @@ def install(config: Config, *, concurrency: int, root: bool, **kwargs: Any) -> N
             f"Installing [primary]{package_count}[/] package(s) to the root project",
             spinner="point",
         ):
-            requirements = (shlex.join(["-e", pkg.path.as_posix()]) for pkg in packages)
+            requirements = (sh_join(["-e", pkg.path.as_posix()]) for pkg in packages)
             pip_install(config.root_venv, requirements)
         info("[succ]Installation done[/]")
         return

@@ -43,7 +43,7 @@ jobs:
           key: ${{ runner.os }}-pip-${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pdm install
+        run: pdm install -dGtest
       - name: Run Tests
         run: |
           git config --global init.defaultBranch main
