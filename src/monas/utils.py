@@ -34,10 +34,10 @@ def info(msg: str) -> None:
 
 def run_command(
     cmd: list[str], cwd: str = None, env: dict[str, str] | None = None, **kwargs: Any
-) -> None:
+) -> subprocess.CompletedProcess:
     """Run command in subprocess"""
     try:
-        subprocess.run(cmd, cwd=cwd, env=env, check=True, **kwargs)
+        return subprocess.run(cmd, cwd=cwd, env=env, check=True, **kwargs)
     except subprocess.CalledProcessError:
         err_console.print("[danger]Error running command[/] {}. ")
         raise click.Abort()

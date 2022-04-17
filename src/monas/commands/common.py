@@ -74,12 +74,12 @@ def list_packages(
     table = Table.grid("Name", padding=(0, 1))
     if long:
         table.add_column("Version")
-        table.add_column("Path")
+        table.add_column("Path", overflow="fold")
     for pkg in packages:
         row = [f"[primary]{pkg.path.name}[/]"]
         if long:
             row.append(f"[succ]{pkg.version}[/]")
-            row.append(f"[info]{pkg.path}[/]")
+            row.append(f"[info]{pkg.path.relative_to(pkg.config.path).as_posix()}[/]")
         table.add_row(*row)
     console.print(table)
 

@@ -26,7 +26,7 @@ class PEP621Metadata(Metadata):
         return TOMLFile(self.path).read()
 
     def _write(self) -> None:
-        TOMLFile(self.path).write(self.data)
+        TOMLFile(self.path).write(self._data)
 
     @property
     def version(self) -> str:
@@ -81,7 +81,9 @@ class PEP621Metadata(Metadata):
             if canonicalize_name(Requirement(dep).name) != dep_name
         ]
         dependencies.append(dependency)
-        self._data["project"]["dependencies"] = dependencies
+        array = tomlkit.array().multiline(True)
+        array.extend(dependencies)
+        self._data["project"]["dependencies"] = array
         self._write()
 
     def remove_dependency(self, dependency: str) -> None:
@@ -91,7 +93,9 @@ class PEP621Metadata(Metadata):
             for dep in self._data["project"].get("dependencies", [])
             if canonicalize_name(Requirement(dep).name) != dep_name
         ]
-        self._data["project"]["dependencies"] = dependencies
+        array = tomlkit.array().multiline(True)
+        array.extend(dependencies)
+        self._data["project"]["dependencies"] = array
         self._write()
 
     def get_template_args(self) -> dict[str, Any]:
