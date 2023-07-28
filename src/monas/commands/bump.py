@@ -133,7 +133,7 @@ def bump(
     info(f"Will bump version for [primary]{len(packages)}[/] package(s)")
     for pkg in packages:
         console.print(
-            f"  [primary]{pkg.path.name}[/] [succ]{pkg.version}[/] -> "
+            f"  [primary]{pkg.name}[/] [succ]{pkg.version}[/] -> "
             f"[succ]{version}[/]"
         )
     if not Confirm.ask("Continue?", console=console, default=True):

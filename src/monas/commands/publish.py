@@ -70,7 +70,7 @@ def publish(
         index = f"[succ]{repository}[/]"
     info(f"The following packages are to be built and published to {index}:")
     for pkg in packages_to_publish:
-        console.print(f"  [primary]{pkg.path.name}[/] [succ]{pkg.version}[/]")
+        console.print(f"  [primary]{pkg.name}[/] [succ]{pkg.version}[/]")
     if not Confirm.ask("Continue?", console=console, default=True):
         ctx.abort()
     dist = config.path / "dist"

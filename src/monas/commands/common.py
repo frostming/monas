@@ -66,7 +66,7 @@ def list_packages(
     """List the packages."""
     if json:
         data = [
-            {"name": pkg.path.name, "version": pkg.version, "path": pkg.path.as_posix()}
+            {"name": pkg.name, "version": pkg.version, "path": pkg.path.as_posix()}
             for pkg in packages
         ]
         console.print_json(data=data)
@@ -76,7 +76,7 @@ def list_packages(
         table.add_column("Version")
         table.add_column("Path", overflow="fold")
     for pkg in packages:
-        row = [f"[primary]{pkg.path.name}[/]"]
+        row = [f"[primary]{pkg.name}[/]"]
         if long:
             row.append(f"[succ]{pkg.version}[/]")
             row.append(f"[info]{pkg.path.relative_to(pkg.config.path).as_posix()}[/]")

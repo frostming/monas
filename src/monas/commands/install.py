@@ -46,11 +46,11 @@ def install(config: Config, *, concurrency: int, root: bool, **kwargs: Any) -> N
     def _on_complete(project: PyPackage, future: Future) -> None:
         if future.exception():
             console.print(
-                f" [red bold]FAIL[/] {project.path.name} {future.exception()}"
+                f" [red bold]FAIL[/] {project.name} {future.exception()}"
             )
             errors.append(future.exception())
         else:
-            console.print(f" [succ]SUCC[/] {project.path.name}")
+            console.print(f" [succ]SUCC[/] {project.name}")
 
     with console.status(
         f"Installing [primary]{package_count}[/] package(s)", spinner="point"
