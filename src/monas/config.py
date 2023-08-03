@@ -90,7 +90,11 @@ class Config:
         for p in self.package_paths:
             for package in p.iterdir():
                 if package.is_dir():
-                    yield PyPackage(self, package)
+                    pypackage = PyPackage(self, package)
+                    if not pypackage.metadata.path.is_file():
+                        # directory has no python metadata file, ignore
+                        continue
+                    yield pypackage
 
 
 pass_config = click.make_pass_decorator(Config, ensure=True)
