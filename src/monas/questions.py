@@ -58,7 +58,7 @@ package_questions = {
         "Build backend:",
         choices=[
             "setuptools(setup.cfg)",
-            "setuptools(pyprojec.toml)",
+            "setuptools(pyproject.toml)",
             "pdm",
             "flit",
             "hatch",
