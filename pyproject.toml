@@ -8,7 +8,7 @@ description = "Python monorepo made easy"
 authors = [
     {name = "Frost Ming", email = "mianghong@gmail.com"}
 ]
-license-expression = "MIT"
+license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
