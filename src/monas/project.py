@@ -149,11 +149,19 @@ class PyPackage:
 
     def install(self) -> None:
         """Bootstrap the package and link depending packages in the monorepo"""
-        dependency_names = self.metadata.get_dependency_names()
-        packages = [
-            pkg
-            for pkg in self.config.iter_packages()
-            if pkg.canonical_name in dependency_names
-        ] + [self]
-        requirements = [sh_join(["-e", pkg.path.as_posix()]) for pkg in packages]
+        local_dependencies = self.get_local_dependencies() + [self]
+        requirements = [
+            sh_join(["-e", pkg.path.as_posix()])
+            for pkg in local_dependencies
+        ]
         pip_install(self.path / ".venv", requirements)
+
+    def get_local_dependencies(self) -> list[PyPackage]:
+        """Return list of local dependencies."""
+        dependency_names = self.metadata.get_dependency_names()
+        local_dependencies = []
+        local_packages = list(self.config.iter_packages())
+        for pkg in local_packages:
+            if pkg.canonical_name in dependency_names:
+                local_dependencies += pkg.get_local_dependencies() + [pkg]
+        return local_dependencies
