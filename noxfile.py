@@ -5,13 +5,13 @@ import nox
 os.environ["PDM_IGNORE_SAVED_PYTHON"] = "1"
 
 
-@nox.session(python=("3.7", "3.8", "3.9", "3.10", "3.11"))
+@nox.session(python=("3.8", "3.9", "3.10", "3.11"))
 def test(session):
     session.run("pdm", "install", "-dGtest", external=True)
     session.run("pytest", "tests/")
 
 
-@nox.session(python="3.9")
+@nox.session(python="3.11")
 def docs(session):
     session.install("-r", "docs/requirements.txt")
 
@@ -19,7 +19,7 @@ def docs(session):
     session.run("sphinx-build", "-W", "-b", "html", "docs/", "build/docs")
 
 
-@nox.session(name="docs-live", python="3.9")
+@nox.session(name="docs-live", python="3.11")
 def docs_live(session):
     session.install("-r", "docs/requirements.txt")
     session.install("-e", ".")
