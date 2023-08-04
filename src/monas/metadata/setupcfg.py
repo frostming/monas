@@ -41,6 +41,10 @@ class SetupCfgMetadata(Metadata):
     def version(self) -> str:
         return self._parser.get("metadata", "version")
 
+    @property
+    def package_name(self) -> str:
+        return self._parser.get("metadata", "name")
+
     @version.setter
     def version(self, value: str) -> None:
         self._parser["metadata"]["version"] = value

@@ -92,9 +92,14 @@ class PyPackage:
         return cast(Type[Metadata], result)(self.path)
 
     @property
+    def name(self) -> str:
+        """Get the project name"""
+        return self.metadata.package_name
+
+    @property
     def canonical_name(self) -> str:
         """Get the project name"""
-        return canonicalize_name(self.path.name)
+        return canonicalize_name(self.name)
 
     @property
     def version(self) -> str:

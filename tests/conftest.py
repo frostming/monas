@@ -46,26 +46,29 @@ def python_version():
 @pytest.fixture()
 def test_project(cli_run, project):
     run_command(["git", "init"], cwd=str(project))
-    with mock.patch(
-        "monas.commands.new.ask_for",
-        side_effect=[
-            {
-                "name": "foo",
-                "version": "0.0.0",
-                "author": "John",
-                "author_email": "john@doe.me",
-                "description": "Test Project",
-                "license_expr": "MIT",
-                "homepage": "https://example.org",
-                "requires_python": ">=3.7",
-                "build_backend": backend,
-            }
-            for backend in ["setuptools(setup.cfg)", "pdm", "flit"]
-        ],
-    ):
-        cli_run(["new", "foo"], cwd=project, input="\n")
-        cli_run(["new", "bar"], cwd=project, input="\n")
-        cli_run(["new", "foo-more", "extras"], cwd=project, input="\n")
+    projects = (
+        (("new", "foo"), "setuptools(setup.cfg)"),
+        (("new", "bar"), "pdm"),
+        (("new", "foo-more", "extras"), "flit"),
+    )
+    for cli_args, backend in projects:
+        with mock.patch(
+            "monas.commands.new.ask_for",
+            side_effect=[
+                {
+                    "name": cli_args[1],
+                    "version": "0.0.0",
+                    "author": "John",
+                    "author_email": "john@doe.me",
+                    "description": "Test Project",
+                    "license_expr": "MIT",
+                    "homepage": "https://example.org",
+                    "requires_python": ">=3.7",
+                    "build_backend": backend,
+                }
+            ],
+        ):
+            cli_run(cli_args, cwd=project, input="\n")
     run_command(["git", "add", "."], cwd=str(project))
     run_command(["git", "commit", "-m", "Initial commit"], cwd=str(project))
     return project

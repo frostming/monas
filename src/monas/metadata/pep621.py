@@ -34,6 +34,10 @@ class PEP621Metadata(Metadata):
     def version(self) -> str:
         return self._data["project"]["version"]
 
+    @property
+    def package_name(self) -> str:
+        return self._data["project"]["name"]
+
     @version.setter
     def version(self, value: str) -> None:
         self._data["project"]["version"] = value
