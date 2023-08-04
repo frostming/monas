@@ -3,7 +3,7 @@ from __future__ import annotations
 import textwrap
 from pathlib import Path
 from shlex import join as sh_join
-from typing import Type, cast
+from typing import Optional, Type, cast
 
 import tomlkit
 from packaging.utils import canonicalize_name
@@ -155,18 +155,33 @@ class PyPackage:
 
     def install(self) -> None:
         """Bootstrap the package and link depending packages in the monorepo"""
-        local_dependencies = [*self.get_local_dependencies(), self]
+        local_dependencies = self.get_local_dependencies([self])
         requirements = [
             sh_join(["-e", pkg.path.as_posix()]) for pkg in local_dependencies
         ]
         pip_install(self.path / ".venv", requirements)
 
-    def get_local_dependencies(self) -> list[PyPackage]:
-        """Return list of local dependencies."""
+    def get_local_dependencies(
+        self,
+        local_dependencies: Optional[list[PyPackage]]=None,
+    ) -> list[PyPackage]:
+        """Return list of local dependencies.
+
+        Args:
+            local_dependencies: Accumulated list of local depencies to install
+        """
+        if not local_dependencies:
+            local_dependencies = []
         dependency_names = self.metadata.get_dependency_names()
-        local_dependencies = []
         local_packages = list(self.config.iter_packages())
         for pkg in local_packages:
-            if pkg.canonical_name in dependency_names:
-                local_dependencies += [*pkg.get_local_dependencies(), pkg]
+            pkg_name = pkg.canonical_name
+            if pkg_name not in dependency_names:
+                continue
+            if pkg_name == self.canonical_name:
+                raise ValueError(f'{self.name} cannot have a dependency on itself')
+            if pkg_name in [ld.canonical_name for ld in local_dependencies]:
+                continue
+            local_dependencies = [pkg, *local_dependencies]
+            local_dependencies = pkg.get_local_dependencies(local_dependencies)
         return local_dependencies
