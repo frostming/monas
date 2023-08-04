@@ -26,7 +26,7 @@ reference
 :caption: Development
 :hidden:
 
-changelog
+Changelog <https://github.com/frostming/monas/releases>
 contributing
 GitHub <https://github.com/frostming/monas>
 PyPI <https://pypi.org/project/monas>
