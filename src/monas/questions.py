@@ -53,17 +53,17 @@ package_questions = {
     "author": Question("author", ""),
     "author_email": Question("author email:", ""),
     "homepage": Question("homepage:", ""),
-    "requires_python": Question("requires_python:", default=">=3.7"),
+    "requires_python": Question("requires_python:", default=">=3.8"),
     "build_backend": Question(
         "Build backend:",
         choices=[
-            "setuptools(setup.cfg)",
-            "setuptools(pyproject.toml)",
             "pdm",
             "flit",
             "hatch",
+            "setuptools(pyproject.toml)",
+            "setuptools(setup.cfg)",
         ],
-        default="setuptools(setup.cfg)",
+        default="pdm",
     ),
 }
 

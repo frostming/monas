@@ -65,8 +65,8 @@ build-backend = "flit_core.buildapi"
 
 pdm_backend = """
 [build-system]
-requires = ["pdm-pep517"]
-build-backend = "pdm.pep517.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 """
 
 hatch_backend = """

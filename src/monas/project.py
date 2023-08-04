@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import textwrap
 from pathlib import Path
+from shlex import join as sh_join
 from typing import Type, cast
 
 import tomlkit
@@ -11,14 +12,14 @@ from tomlkit.toml_file import TOMLFile
 from monas.config import Config
 from monas.metadata import ALL_METADATA_CLASSES, Metadata
 from monas.questions import InputMetadata
-from monas.utils import pip_install, sh_join
+from monas.utils import pip_install
 
 BUILD_BACKENDS = {
     "setuptools": {
         "requires": ["setuptools>=61", "wheel"],
         "build-backend": "setuptools.build_meta",
     },
-    "pdm": {"requires": ["pdm-pep517"], "build-backend": "pdm.pep517.api"},
+    "pdm": {"requires": ["pdm-backend"], "build-backend": "pdm.backend"},
     "flit": {"requires": ["flit_core>=3.2,<4"], "build-backend": "flit_core.buildapi"},
     "hatch": {"requires": ["hatchling>=0.22.0"], "build-backend": "hatchling.build"},
 }
@@ -59,7 +60,7 @@ def get_build_system_for_backend(name: str) -> dict:
     return BUILD_BACKENDS[name]
 
 
-def get_metadata_class_for_backend(name: str) -> Type[Metadata]:
+def get_metadata_class_for_backend(name: str) -> type[Metadata]:
     backend, _, extra = name.partition("(")
     if backend == "setuptools":
         class_name = "pep621" if extra.rstrip(")") == "pyproject.toml" else "setupcfg"
@@ -154,10 +155,9 @@ class PyPackage:
 
     def install(self) -> None:
         """Bootstrap the package and link depending packages in the monorepo"""
-        local_dependencies = self.get_local_dependencies() + [self]
+        local_dependencies = [*self.get_local_dependencies(), self]
         requirements = [
-            sh_join(["-e", pkg.path.as_posix()])
-            for pkg in local_dependencies
+            sh_join(["-e", pkg.path.as_posix()]) for pkg in local_dependencies
         ]
         pip_install(self.path / ".venv", requirements)
 
@@ -168,5 +168,5 @@ class PyPackage:
         local_packages = list(self.config.iter_packages())
         for pkg in local_packages:
             if pkg.canonical_name in dependency_names:
-                local_dependencies += pkg.get_local_dependencies() + [pkg]
+                local_dependencies += [*pkg.get_local_dependencies(), pkg]
         return local_dependencies
