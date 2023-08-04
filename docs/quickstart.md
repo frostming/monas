@@ -2,7 +2,7 @@
 
 ## Install Monas
 
-**Monas** requires Python >=3.7.
+**Monas** requires Python >=3.8.
 
 It is recommended to install with `pipx`, if `pipx` haven't been installed yet, refer to the [pipx's docs](https://github.com/pipxproject/pipx)
 
