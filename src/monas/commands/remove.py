@@ -38,9 +38,9 @@ def remove(
     try:
         req = Requirement(dependency)
     except InvalidRequirement:
-        raise click.BadParameter(f"Invalid dependency {dependency}")
+        raise click.BadParameter(f"Invalid dependency {dependency}") from None
 
-    exclude = list(exclude) + [req.name]
+    exclude = [*list(exclude), req.name]
     packages = list(filter_packages(config, exclude=exclude, **kwargs))
     if not packages:
         info("[notice]No package is found[/]")

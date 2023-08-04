@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import importlib.metadata
+
 import rich_click as click
 from rich import traceback
 
@@ -14,7 +16,7 @@ from monas.commands.publish import publish
 from monas.commands.remove import remove
 from monas.utils import err_console
 
-__version__ = "0.0.3"
+__version__ = importlib.metadata.version(__package__)
 
 click.rich_click.USE_RICH_MARKUP = True
 traceback.install(console=err_console)

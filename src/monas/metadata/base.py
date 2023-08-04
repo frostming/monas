@@ -27,14 +27,15 @@ class Metadata(metaclass=abc.ABCMeta):
         """Get the project version"""
         pass
 
+    @version.setter
+    @abc.abstractmethod
+    def version(self, value: str) -> None:
+        """Set the project version"""
+        pass
+
     @abc.abstractproperty
     def package_name(self) -> str:
         """Get the project version"""
-        pass
-
-    @version.setter
-    def version(self, value: str) -> None:
-        """Set the project version"""
         pass
 
     @abc.abstractclassmethod

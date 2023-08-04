@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from concurrent.futures import Future
 from concurrent.futures import ThreadPoolExecutor as Pool
+from shlex import join as sh_join
 from typing import Any
 
 import rich_click as click
@@ -10,7 +11,7 @@ from monas.commands.common import concurrency_option, filter_options, filter_pac
 from monas.config import Config, pass_config
 from monas.project import PyPackage
 from monas.utils import err_console as console
-from monas.utils import info, pip_install, sh_join
+from monas.utils import info, pip_install
 
 
 @click.command()
@@ -45,9 +46,7 @@ def install(config: Config, *, concurrency: int, root: bool, **kwargs: Any) -> N
 
     def _on_complete(project: PyPackage, future: Future) -> None:
         if future.exception():
-            console.print(
-                f" [red bold]FAIL[/] {project.name} {future.exception()}"
-            )
+            console.print(f" [red bold]FAIL[/] {project.name} {future.exception()}")
             errors.append(future.exception())
         else:
             console.print(f" [succ]SUCC[/] {project.name}")

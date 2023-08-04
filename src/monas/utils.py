@@ -33,14 +33,17 @@ def info(msg: str) -> None:
 
 
 def run_command(
-    cmd: list[str], cwd: str = None, env: dict[str, str] | None = None, **kwargs: Any
+    cmd: list[str],
+    cwd: str | None = None,
+    env: dict[str, str] | None = None,
+    **kwargs: Any,
 ) -> subprocess.CompletedProcess:
     """Run command in subprocess"""
     try:
         return subprocess.run(cmd, cwd=cwd, env=env, check=True, **kwargs)
     except subprocess.CalledProcessError:
-        err_console.print("[danger]Error running command[/] {}. ")
-        raise click.Abort()
+        err_console.print(f"[danger]Error running command[/] {cmd}. ")
+        raise click.Abort() from None
 
 
 def get_preferred_python_version() -> str:
@@ -58,7 +61,7 @@ def ensure_virtualenv(path: Path, python_version: str | None = None) -> None:
     info(f"Creating virtualenv: [primary]{path}[/]")
     args = [str(path)]
     if python_version:
-        args = ["-p", python_version] + args
+        args = ["-p", python_version, *args]
     cli_run(args, setup_logging=True)
 
 
@@ -97,13 +100,3 @@ def is_relative_to(path: Path, parent: Path) -> bool:
         return True
     except ValueError:
         return False
-
-
-if sys.version_info >= (3, 8):
-    from shlex import join as sh_join
-else:
-    from shlex import quote as quote
-
-    def sh_join(split_command: Iterable[str]) -> str:
-        """Return a shell-escaped string from *split_command*."""
-        return " ".join(quote(arg) for arg in split_command)

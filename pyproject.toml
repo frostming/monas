@@ -1,6 +1,6 @@
 [build-system]
-requires = ["pdm-pep517"]
-build-backend = "pdm.pep517.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [project]
 name = "monas"
@@ -10,7 +10,7 @@ authors = [
 ]
 license = {text = "MIT"}
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     "gitpython>=3",
     "click>=7",
@@ -41,23 +41,19 @@ Homepage = "https://github.com/frostming/monas"
 [project.scripts]
 monas = "monas.cli:main"
 
-[tool.pdm]
-version = {from = "src/monas/cli.py"}
-package-dir = "src"
+[tool.pdm.version]
+source = "scm"
+
+[tool.pdm.build]
+packge-dir = "src"
 
 [tool.pdm.dev-dependencies]
 test = [
     "pytest>=6.1",
 ]
-dev = [
-    "towncrier>=19.2",
-    "parver>=0.3",
-]
 
 [tool.pdm.scripts]
-release = "python -m tasks.release"
 test = "pytest tests/"
-doc = {shell = "cd docs && mkdocs serve", help = "Start the dev server for doc preview"}
 lint = "pre-commit run --all-files"
 
 [tool.black]
@@ -78,52 +74,25 @@ exclude = '''
 )/
 '''
 
-[tool.towncrier]
-package = "monas"
-filename = "CHANGELOG.md"
-issue_format = "[#{issue}](https://github.com/frostming/monas/issues/{issue})"
-directory = "news/"
-start_string = "<!-- insertion marker -->"
-title_format = "[v{version}](https://github.com/frostming/monas/releases/tag/{version}) ({project_date})"
-template = "news/towncrier_template.md"
-underlines = "-~^"
+[tool.ruff]
+line-length = 88
+extend-select = [
+  "I",    # isort
+  "B",    # flake8-bugbear
+  "C4",   # flake8-comprehensions
+  "PGH",  # pygrep-hooks
+  "RUF",  # ruff
+  "W",    # pycodestyle
+  "YTT",  # flake8-2020
+]
+src = ["src"]
+target-version = "py38"
 
-[[tool.towncrier.type]]
-directory = "feature"
-name = "Features & Improvements"
-showcontent = true
+[tool.ruff.mccabe]
+max-complexity = 10
 
-[[tool.towncrier.type]]
-directory = "bugfix"
-name = "Bug Fixes"
-showcontent = true
-
-[[tool.towncrier.type]]
-directory = "doc"
-name = "Improved Documentation"
-showcontent = true
-
-[[tool.towncrier.type]]
-directory = "dep"
-name = "Dependencies"
-showcontent = true
-
-[[tool.towncrier.type]]
-directory = "removal"
-name = "Removals and Deprecations"
-showcontent = true
-
-[[tool.towncrier.type]]
-directory = "misc"
-name = "Miscellany"
-showcontent = true
-
-[tool.isort]
-profile = "black"
-atomic = true
-skip_glob = ["*/setup.py"]
-filter_files = true
-known_first_party = ["monas"]
+[tool.ruff.isort]
+known-first-party = ["monas"]
 
 [tool.pytest.ini_options]
 filterwarnings = [

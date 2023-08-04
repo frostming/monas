@@ -9,7 +9,7 @@ from rich.prompt import Confirm
 from monas.config import Config, pass_config
 from monas.project import InputMetadata, PyPackage, get_metadata_class_for_backend
 from monas.questions import ask_for, package_questions
-from monas.utils import console, info
+from monas.utils import console, err_console, info
 
 
 @click.command()
@@ -49,8 +49,13 @@ def new(
     )
     metadata_cls = get_metadata_class_for_backend(inputs.build_backend)
     metadata_contents = metadata_cls.create(inputs)
-    info(f"Writing pyproject.toml at [primary]{metadata_cls.filename}[/]:")
+    info(f"Writing metadata at [primary]{metadata_cls.filename}[/]:")
     console.print(metadata_contents.replace("[", "\\["))
+    if "setup.cfg" in inputs.build_backend:
+        err_console.print(
+            "[notice]The latest version of setuptools supports pyproject.toml "
+            "metadata, we highly recommend using it.[/]"
+        )
     if not Confirm.ask("Is this OK?", console=console, default=True):
         ctx.abort()
     package_path.mkdir(parents=True)
