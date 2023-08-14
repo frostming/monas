@@ -24,8 +24,9 @@ def init(*, version: str, python_version: str) -> None:
     Args:
         path: The path to the `pyproject.toml` file.
     """
+    default_package_dirs = ["packages"]
     mono_settings = {
-        "packages": ["packages/"],
+        "packages": [f"{pb}/*" for pb in default_package_dirs],
         "version": version,
         "python-version": python_version,
     }
@@ -39,7 +40,7 @@ def init(*, version: str, python_version: str) -> None:
     info(f"{verb} {pyproject_toml.name}")
     doc.setdefault("tool", {}).setdefault("monas", {}).update(mono_settings)
     pyproject_toml.write_text(tomlkit.dumps(doc))
-    for p in mono_settings["packages"]:
+    for p in default_package_dirs:
         p = Path(p)
         if not p.exists():
             info(f"Creating {p.name}")

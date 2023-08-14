@@ -26,11 +26,14 @@ def new(
 
     If location isn't given, it defaults to the first location of `packages` config.
     """
-    if location is None:
-        location = config.package_paths[0]
+    parent_dir = Path(config.default_package_dir)
+    if location is not None:
+        parent_dir = Path(location)
+
     if any(package == pkg.name for pkg in config.iter_packages()):
         raise click.BadParameter(f"{package} already exists")
-    package_path = Path(location, package).absolute()
+
+    package_path = (parent_dir / package).absolute()
     repo = config.get_repo()
 
     default_values = {
@@ -63,5 +66,5 @@ def new(
         f.write(metadata_contents)
     info("Creating project files")
     PyPackage.create(config, package_path, inputs)
-    if location not in config.package_paths:
-        config.add_package_path(location)
+
+    config.add_package_path(parent_dir)

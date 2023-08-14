@@ -4,7 +4,7 @@ def test_init_with_default_python_version(cli_run, tmp_path, python_version):
         tmp_path.joinpath("pyproject.toml").read_text()
         == f"""\
 [tool.monas]
-packages = ["packages/"]
+packages = ["packages/*"]
 version = "0.0.0"
 python-version = "{python_version}"
 """
@@ -17,7 +17,7 @@ def test_init_with_given_python_version(cli_run, tmp_path):
         tmp_path.joinpath("pyproject.toml").read_text()
         == """\
 [tool.monas]
-packages = ["packages/"]
+packages = ["packages/*"]
 version = "0.0.0"
 python-version = "3.9"
 """

@@ -78,9 +78,22 @@ class Config:
             "python-version", ".".join(map(str, sys.version_info[:2]))
         )
 
-    def add_package_path(self, path: str) -> None:
-        """Add a package path to the configuration"""
-        self._tool.setdefault("packages", []).append(path.rstrip("/") + "/")
+    @property
+    def default_package_dir(self) -> Path:
+        """Default directory to find or add mono-repo packages."""
+        first_pkg_path = self.package_paths[0]
+        if "*" or "?" in first_pkg_path.name:
+            return first_pkg_path.parent
+        return first_pkg_path
+
+    def add_package_path(self, path: Path) -> None:
+        """Add a package-containing directory path to the configuration"""
+        relative_path = path.relative_to(self.path) if path.is_absolute() else path
+        if relative_path.name != "*":
+            relative_path = relative_path / "*"
+        if (self.path / relative_path) in self.package_paths:
+            return
+        self._tool.setdefault("packages", []).append(relative_path.as_posix())
         TOMLFile(self.path / "pyproject.toml").write(self._pyproject)
 
     def iter_packages(self) -> Iterable[PyPackage]:
@@ -88,13 +101,12 @@ class Config:
         from monas.project import PyPackage
 
         for p in self.package_paths:
-            for package in p.iterdir():
+            child_pkgs = list(p.parent.glob(p.name))
+            for package in child_pkgs:
                 if package.is_dir():
                     pypackage = PyPackage(self, package)
-                    if not pypackage.metadata.path.is_file():
-                        # directory has no python metadata file, ignore
-                        continue
-                    yield pypackage
+                    if pypackage.metadata.path.is_file():
+                        yield pypackage
 
 
 pass_config = click.make_pass_decorator(Config, ensure=True)
