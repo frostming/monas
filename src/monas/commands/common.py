@@ -10,6 +10,7 @@ from rich.table import Table
 from monas.config import Config
 from monas.project import PyPackage
 from monas.utils import console, is_relative_to
+from monas.vcs import DescribeResult
 
 
 def filter_options(f):
@@ -84,7 +85,9 @@ def list_packages(
     console.print(table)
 
 
-def get_changed_packages(config: Config, describe_result: str) -> list[PyPackage]:
+def get_changed_packages(
+    config: Config, describe_result: DescribeResult
+) -> list[PyPackage]:
     """Get the changed packages."""
     repo = config.get_repo()
     if describe_result.tag and describe_result.distance == 0:
