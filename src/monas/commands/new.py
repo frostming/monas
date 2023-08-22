@@ -26,7 +26,7 @@ def new(
 
     If location isn't given, it defaults to the first location of `packages` config.
     """
-    parent_dir = Path(config.default_package_dir)
+    parent_dir = config.default_package_dir
     if location is not None:
         parent_dir = Path(location)
 
