@@ -163,7 +163,7 @@ class PyPackage:
 
     def get_local_dependencies(
         self,
-        local_dependencies: Optional[list[PyPackage]]=None,
+        local_dependencies: list[PyPackage] | None = None,
     ) -> list[PyPackage]:
         """Return list of local dependencies.
 
