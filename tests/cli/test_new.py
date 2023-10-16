@@ -144,7 +144,7 @@ def test_new_package_under_non_default_location(project, cli_run, python_version
         project.joinpath("pyproject.toml").read_text()
         == f"""\
 [tool.monas]
-packages = ["packages/", "others/"]
+packages = ["packages/*", "others/*"]
 version = "0.0.0"
 python-version = "{python_version}"
 """
