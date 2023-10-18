@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import textwrap
 from pathlib import Path
 
@@ -18,13 +20,35 @@ from monas.utils import get_preferred_python_version, info
     help="The Python version to use",
 )
 @click.option("-v", "--version", default="0.0.0", help="The version of the monorepo")
-def init(*, version: str, python_version: str) -> None:
+@click.option(
+    "-d",
+    "--default-package-dir",
+    multiple=True,
+    default=["packages"],
+    help="Default Package Directories to be created",
+)
+@click.option(
+    "-n",
+    "--no-package-dir",
+    is_flag=True,
+    default=False,
+    help="If specified, no package directories will be created",
+)
+def init(
+    *,
+    version: str,
+    python_version: str,
+    default_package_dir: list[str],
+    no_package_dir: bool,
+) -> None:
     """Initialize the monas tool.
 
     Args:
         path: The path to the `pyproject.toml` file.
     """
-    default_package_dirs = ["packages"]
+    default_package_dirs = list(default_package_dir)
+    if no_package_dir:
+        default_package_dirs.clear()
     mono_settings = {
         "packages": [f"{pb}/*" for pb in default_package_dirs],
         "version": version,
