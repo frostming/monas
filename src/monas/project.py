@@ -3,7 +3,7 @@ from __future__ import annotations
 import textwrap
 from pathlib import Path
 from shlex import join as sh_join
-from typing import Optional, Type, cast
+from typing import Type, cast
 
 import tomlkit
 from packaging.utils import canonicalize_name
@@ -179,7 +179,7 @@ class PyPackage:
             if pkg_name not in dependency_names:
                 continue
             if pkg_name == self.canonical_name:
-                raise ValueError(f'{self.name} cannot have a dependency on itself')
+                raise ValueError(f"{self.name} cannot have a dependency on itself")
             if pkg_name in [ld.canonical_name for ld in local_dependencies]:
                 continue
             local_dependencies = [pkg, *local_dependencies]
