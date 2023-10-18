@@ -26,7 +26,6 @@ python-version = "3.9"
 
 def test_init_with_no_package_directories(cli_run, tmp_path):
     cli_run(["init", "-n", "-p", "3.9"], cwd=tmp_path)
-    print("CLI TEST_RAN")
     assert (
         tmp_path.joinpath("pyproject.toml").read_text()
         == """\
