@@ -149,3 +149,29 @@ version = "0.0.0"
 python-version = "{python_version}"
 """
     )
+
+
+@pytest.mark.usefixtures("mock_input")
+def test_new_package_with_explicit_path(project, cli_run, python_version):
+    """
+    Create a new project with explicit path entry
+    """
+    cli_run(["new", "-e", "first", "."], cwd=project, input="\n")
+    cli_run(["new", "-e", "second", "."], cwd=project, input="\n")
+    cli_run(["new", "-e", "third", "nested"], cwd=project, input="\n")
+    packages = [
+        ("first", project.joinpath("first")),
+        ("second", project.joinpath("second")),
+        ("third", project.joinpath("nested/third")),
+    ]
+    for _package_name, package_path in packages:
+        assert package_path.is_dir()
+    assert (
+        project.joinpath("pyproject.toml").read_text()
+        == f"""\
+[tool.monas]
+packages = ["packages/*", "first", "second", "nested/third"]
+version = "0.0.0"
+python-version = "{python_version}"
+"""
+    )

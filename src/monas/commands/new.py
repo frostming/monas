@@ -15,10 +15,23 @@ from monas.utils import console, err_console, info
 @click.command()
 @click.argument("package", required=True)
 @click.argument("location", required=False)
+@click.option(
+    "-e",
+    "--explicit-package-entry",
+    is_flag=True,
+    default=False,
+    help="If specified, an explicit package entry "
+    + "will be added to the list of packages",
+)
 @pass_config
 @pass_context
 def new(
-    ctx: click.Context, config: Config, *, package: str, location: str | None = None
+    ctx: click.Context,
+    config: Config,
+    *,
+    package: str,
+    location: str | None = None,
+    explicit_package_entry: bool,
 ):
     """Create a new <package> under <location>.
 
@@ -67,4 +80,7 @@ def new(
     info("Creating project files")
     PyPackage.create(config, package_path, inputs)
 
-    config.add_package_path(parent_dir)
+    if explicit_package_entry:
+        config.add_explicit_package_path(package_path)
+    else:
+        config.add_package_path(parent_dir)
