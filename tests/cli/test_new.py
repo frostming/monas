@@ -152,6 +152,7 @@ python-version = "{python_version}"
 
 
 @pytest.mark.usefixtures("mock_input")
+@pytest.mark.parametrize("backend", ["setuptools(pyproject.toml)"])
 def test_new_package_with_explicit_path(project, cli_run, python_version):
     """
     Create a new project with explicit path entry
