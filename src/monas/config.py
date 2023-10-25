@@ -80,7 +80,12 @@ class Config:
 
     @property
     def default_package_dir(self) -> Path:
-        """Default directory to find or add mono-repo packages."""
+        """
+        Default directory to find or add mono-repo packages.
+        If no directory is specified, will fallback to project root path
+        """
+        if len(self.package_paths) == 0:
+            return self.path
         first_pkg_path = self.package_paths[0]
         if "*" or "?" in first_pkg_path.name:
             return first_pkg_path.parent
@@ -92,6 +97,17 @@ class Config:
         if relative_path.name != "*":
             relative_path = relative_path / "*"
         if (self.path / relative_path) in self.package_paths:
+            return
+        self._tool.setdefault("packages", []).append(relative_path.as_posix())
+        TOMLFile(self.path / "pyproject.toml").write(self._pyproject)
+
+    def add_explicit_package_path(self, package_path: Path) -> None:
+        relative_path = (
+            package_path.relative_to(self.path)
+            if package_path.is_absolute()
+            else package_path
+        )
+        if relative_path in self.package_paths:
             return
         self._tool.setdefault("packages", []).append(relative_path.as_posix())
         TOMLFile(self.path / "pyproject.toml").write(self._pyproject)
