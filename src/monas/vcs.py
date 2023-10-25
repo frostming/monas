@@ -69,13 +69,11 @@ class Git:
 
     def commit(self, message: str) -> None:
         """Commit the changes."""
-        self.repo.git.add(".")
+        self.repo.git.add("-u")
         self.repo.git.commit(m=message)
 
     def tag(self, tag: str, message: str) -> None:
         self.repo.git.tag(tag, a=True, m=message)
 
     def push(self, including_tags: bool = True) -> None:
-        self.repo.git.push()
-        if including_tags:
-            self.repo.git.push("--tags")
+        self.repo.git.push(follow_tags=including_tags)
